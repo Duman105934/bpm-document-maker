@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:sm="http://bpm-document-maker/schema/bpmn/sm"
+                  id="Definitions_Example" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_Payment" name="Подтверждение оплаты по OTP" isExecutable="false">
+    <bpmn:documentation>Пример: клиент подтверждает оплату одноразовым кодом из SMS.</bpmn:documentation>
+    <bpmn:startEvent id="Start" name="Старт">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:intermediateCatchEvent id="Ev_PayClicked" name="Нажата «Оплатить»" sm:kind="event" sm:code="PAY_CLICKED" sm:source="МП" sm:summary="Клиент нажал кнопку «Оплатить» на экране корзины">
+      <bpmn:extensionElements>
+        <sm:Parameters>
+          <sm:Parameter name="orderId" direction="in" type="string" required="true" description="ID заказа" />
+          <sm:Parameter name="amount" direction="in" type="number" required="true" description="Сумма, тенге" />
+        </sm:Parameters>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="St_WaitOtp" name="Ожидание OTP" sm:kind="state" sm:code="WAIT_OTP" sm:summary="Платёж создан, ждём подтверждения кодом из SMS">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Api_SendOtp" name="Отправить OTP" sm:kind="api" sm:controller="otp-service / OtpController" sm:method="POST" sm:endpoint="/api/v1/otp/send" sm:summary="Генерирует код, сохраняет его хэш и отправляет SMS">
+      <bpmn:extensionElements>
+        <sm:Parameters>
+          <sm:Parameter name="phone" direction="in" type="string" required="true" description="Номер телефона клиента" />
+          <sm:Parameter name="otpId" direction="out" type="string" description="ID отправленного кода" />
+          <sm:Parameter name="ttlSec" direction="out" type="number" description="Время жизни кода" />
+        </sm:Parameters>
+        <sm:Links>
+          <sm:Link title="Swagger otp-service" href="https://example.com/swagger/otp-service" />
+        </sm:Links>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+      <bpmn:dataInputAssociation id="DIA_Req">
+        <bpmn:sourceRef>Json_Req</bpmn:sourceRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataOutputAssociation id="DOA_Resp">
+        <bpmn:targetRef>Json_Resp</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:dataOutputAssociation id="DOA_Db">
+        <bpmn:targetRef>Db_Otp</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:task>
+    <bpmn:task id="Cmd_ShowOtp" name="Показать экран OTP" sm:kind="cmd" sm:code="SHOW_OTP_SCREEN" sm:summary="Команда МП открыть экран ввода OTP">
+      <bpmn:extensionElements>
+        <sm:Parameters>
+          <sm:Parameter name="otpId" direction="in" type="string" required="true" />
+          <sm:Parameter name="ttlSec" direction="in" type="number" />
+        </sm:Parameters>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:incoming>Flow_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Mob_OtpInput" name="Ввод OTP" sm:kind="mobile" sm:code="OTP_INPUT" sm:summary="Экран ввода 6-значного кода с таймером повторной отправки">
+      <bpmn:extensionElements>
+        <sm:Parameters>
+          <sm:Parameter name="code" direction="out" type="string" required="true" description="Введённый код" />
+        </sm:Parameters>
+        <sm:Links>
+          <sm:Link title="Макет в Figma" href="https://example.com/figma/otp" />
+          <sm:Link title="Описание в Confluence" href="https://example.com/confluence/otp" />
+        </sm:Links>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateCatchEvent id="Ev_OtpEntered" name="OTP введён" sm:kind="event" sm:code="OTP_ENTERED" sm:source="МП" sm:summary="Клиент ввёл код и нажал «Подтвердить»">
+      <bpmn:incoming>Flow_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_7</bpmn:outgoing>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:exclusiveGateway id="Gw_OtpValid" name="Код верный?">
+      <bpmn:incoming>Flow_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="St_Paid" name="Оплата подтверждена" sm:kind="state" sm:code="PAID" sm:summary="Финальное состояние: платёж проведён">
+      <bpmn:incoming>Flow_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_8</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End" name="Готово">
+      <bpmn:incoming>Flow_8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataObjectReference id="Json_Req" name="SendOtpRequest" dataObjectRef="DataObject_Req" sm:kind="json" sm:direction="in" sm:summary="Тело запроса POST /api/v1/otp/send">
+      <bpmn:extensionElements>
+        <sm:Json>{"phone": "+70000000000", "channel": "SMS", "orderId": "ord-42"}</sm:Json>
+      </bpmn:extensionElements>
+    </bpmn:dataObjectReference>
+    <bpmn:dataObject id="DataObject_Req" />
+    <bpmn:dataObjectReference id="Json_Resp" name="SendOtpResponse" dataObjectRef="DataObject_Resp" sm:kind="json" sm:direction="out" sm:summary="Ответ otp-service">
+      <bpmn:extensionElements>
+        <sm:Json>{"otpId": "c1f0-…", "ttlSec": 120, "attemptsLeft": 3}</sm:Json>
+      </bpmn:extensionElements>
+    </bpmn:dataObjectReference>
+    <bpmn:dataObject id="DataObject_Resp" />
+    <bpmn:dataStoreReference id="Db_Otp" name="otp_codes" sm:kind="db" sm:table="otp_codes" sm:database="otp_db.public" sm:summary="Хэши отправленных кодов">
+      <bpmn:extensionElements>
+        <sm:Columns>
+          <sm:Column name="id" type="uuid" primaryKey="true" />
+          <sm:Column name="phone" type="varchar(16)" />
+          <sm:Column name="code_hash" type="varchar(64)" description="SHA-256 кода" />
+          <sm:Column name="expires_at" type="timestamptz" />
+          <sm:Column name="confirmed_at" type="timestamptz" nullable="true" />
+        </sm:Columns>
+      </bpmn:extensionElements>
+    </bpmn:dataStoreReference>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="Start" targetRef="Ev_PayClicked" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Ev_PayClicked" targetRef="St_WaitOtp" sm:trigger="PAY_CLICKED" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="St_WaitOtp" targetRef="Api_SendOtp" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Api_SendOtp" targetRef="Cmd_ShowOtp" />
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Cmd_ShowOtp" targetRef="Mob_OtpInput" />
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Mob_OtpInput" targetRef="Ev_OtpEntered" />
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="Ev_OtpEntered" targetRef="Gw_OtpValid" sm:trigger="OTP_ENTERED" />
+    <bpmn:sequenceFlow id="Flow_Yes" name="да" sourceRef="Gw_OtpValid" targetRef="St_Paid" />
+    <bpmn:sequenceFlow id="Flow_No" name="нет" sourceRef="Gw_OtpValid" targetRef="Cmd_ShowOtp" sm:summary="Код неверный — показать экран OTP повторно" />
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="St_Paid" targetRef="End" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_Payment">
+      <bpmndi:BPMNShape id="Start_di" bpmnElement="Start">
+        <dc:Bounds x="152" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="155" y="225" width="31" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Ev_PayClicked_di" bpmnElement="Ev_PayClicked">
+        <dc:Bounds x="232" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="203" y="225" width="94" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="St_WaitOtp_di" bpmnElement="St_WaitOtp">
+        <dc:Bounds x="320" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Api_SendOtp_di" bpmnElement="Api_SendOtp">
+        <dc:Bounds x="480" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Cmd_ShowOtp_di" bpmnElement="Cmd_ShowOtp">
+        <dc:Bounds x="640" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Mob_OtpInput_di" bpmnElement="Mob_OtpInput">
+        <dc:Bounds x="800" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Ev_OtpEntered_di" bpmnElement="Ev_OtpEntered">
+        <dc:Bounds x="962" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="946" y="225" width="68" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gw_OtpValid_di" bpmnElement="Gw_OtpValid" isMarkerVisible="true">
+        <dc:Bounds x="1045" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1035" y="145" width="70" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="St_Paid_di" bpmnElement="St_Paid">
+        <dc:Bounds x="1150" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_di" bpmnElement="End">
+        <dc:Bounds x="1312" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1311" y="225" width="38" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Json_Req_di" bpmnElement="Json_Req">
+        <dc:Bounds x="432" y="40" width="36" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="406" y="20" width="88" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Json_Resp_di" bpmnElement="Json_Resp">
+        <dc:Bounds x="592" y="40" width="36" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="563" y="20" width="94" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Db_Otp_di" bpmnElement="Db_Otp">
+        <dc:Bounds x="505" y="295" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="495" y="352" width="70" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="188" y="200" /><di:waypoint x="232" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="268" y="200" /><di:waypoint x="320" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="420" y="200" /><di:waypoint x="480" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="580" y="200" /><di:waypoint x="640" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <di:waypoint x="740" y="200" /><di:waypoint x="800" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6">
+        <di:waypoint x="900" y="200" /><di:waypoint x="962" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7">
+        <di:waypoint x="998" y="200" /><di:waypoint x="1045" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Yes_di" bpmnElement="Flow_Yes">
+        <di:waypoint x="1095" y="200" /><di:waypoint x="1150" y="200" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1115" y="182" width="15" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_No_di" bpmnElement="Flow_No">
+        <di:waypoint x="1070" y="225" /><di:waypoint x="1070" y="400" /><di:waypoint x="690" y="400" /><di:waypoint x="690" y="240" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1078" y="300" width="20" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8">
+        <di:waypoint x="1250" y="200" /><di:waypoint x="1312" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DIA_Req_di" bpmnElement="DIA_Req">
+        <di:waypoint x="462" y="90" /><di:waypoint x="505" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DOA_Resp_di" bpmnElement="DOA_Resp">
+        <di:waypoint x="555" y="160" /><di:waypoint x="598" y="90" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DOA_Db_di" bpmnElement="DOA_Db">
+        <di:waypoint x="530" y="240" /><di:waypoint x="530" y="295" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

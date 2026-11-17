@@ -1,0 +1,11 @@
+BPM Document Maker
+
+Required Notice: Copyright (c) 2026 Duman Makulbekov (https://github.com/Duman105934/bpm-document-maker)
+
+This software is licensed under the PolyForm Noncommercial License 1.0.0
+(https://polyformproject.org/licenses/noncommercial/1.0.0). See the LICENSE file.
+Commercial use is not permitted without a separate written agreement with the copyright holder.
+
+This license applies to the original code of this project only. Third-party components
+(npm packages bundled into the application and the PT Sans / PT Mono fonts) remain under
+their own licenses. See THIRD-PARTY-NOTICES.md and src/assets/fonts/OFL.txt.

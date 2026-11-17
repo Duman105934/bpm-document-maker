@@ -1,0 +1,270 @@
+{
+  "name": "StateMachine",
+  "prefix": "sm",
+  "uri": "http://bpm-document-maker/schema/bpmn/sm",
+  "associations": [],
+  "types": [
+    {
+      "name": "BaseElementExt",
+      "isAbstract": true,
+      "extends": [
+        "bpmn:BaseElement"
+      ],
+      "properties": [
+        {
+          "name": "summary",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "FlowElementExt",
+      "isAbstract": true,
+      "extends": [
+        "bpmn:FlowElement"
+      ],
+      "properties": [
+        {
+          "name": "kind",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "code",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "screen",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "controller",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "method",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "endpoint",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "source",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "direction",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "table",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "database",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "SequenceFlowExt",
+      "isAbstract": true,
+      "extends": [
+        "bpmn:SequenceFlow"
+      ],
+      "properties": [
+        {
+          "name": "trigger",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "Parameters",
+      "superClass": [
+        "Element"
+      ],
+      "properties": [
+        {
+          "name": "values",
+          "isMany": true,
+          "type": "Parameter"
+        }
+      ]
+    },
+    {
+      "name": "Parameter",
+      "superClass": [
+        "Element"
+      ],
+      "properties": [
+        {
+          "name": "name",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "direction",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "type",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "required",
+          "isAttr": true,
+          "type": "Boolean"
+        },
+        {
+          "name": "description",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "Json",
+      "superClass": [
+        "Element"
+      ],
+      "properties": [
+        {
+          "name": "format",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "body",
+          "isBody": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "Screenshot",
+      "superClass": [
+        "Element"
+      ],
+      "properties": [
+        {
+          "name": "name",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "mimeType",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "width",
+          "isAttr": true,
+          "type": "Integer"
+        },
+        {
+          "name": "height",
+          "isAttr": true,
+          "type": "Integer"
+        },
+        {
+          "name": "body",
+          "isBody": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "Links",
+      "superClass": [
+        "Element"
+      ],
+      "properties": [
+        {
+          "name": "values",
+          "isMany": true,
+          "type": "Link"
+        }
+      ]
+    },
+    {
+      "name": "Link",
+      "superClass": [
+        "Element"
+      ],
+      "properties": [
+        {
+          "name": "title",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "href",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "Columns",
+      "superClass": [
+        "Element"
+      ],
+      "properties": [
+        {
+          "name": "values",
+          "isMany": true,
+          "type": "Column"
+        }
+      ]
+    },
+    {
+      "name": "Column",
+      "superClass": [
+        "Element"
+      ],
+      "properties": [
+        {
+          "name": "name",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "type",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "primaryKey",
+          "isAttr": true,
+          "type": "Boolean"
+        },
+        {
+          "name": "nullable",
+          "isAttr": true,
+          "type": "Boolean"
+        },
+        {
+          "name": "description",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    }
+  ],
+  "enumerations": []
+}

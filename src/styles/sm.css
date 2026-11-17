@@ -1,0 +1,221 @@
+/* палитра, context pad, popup menu: иконки своих элементов */
+
+.djs-palette .entry.sm-palette-entry img {
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
+}
+
+.djs-context-pad .entry.sm-context-pad-entry img {
+  width: 22px;
+  height: 22px;
+}
+
+/* значок ссылки на фигуре */
+
+.djs-element .sm-link-badge {
+  cursor: pointer;
+}
+
+/* всплывающая подсказка — нейтральная, в тон стандартному bpmn-js */
+
+.sm-tooltip {
+  position: absolute;
+  z-index: 50;
+  max-width: 380px;
+  min-width: 200px;
+  max-height: 70vh;
+  overflow: auto;
+  padding: 10px 12px;
+  background: #FFFFFF;
+  color: #22242A;
+  border: 1px solid #C9CCD1;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.sm-tooltip[hidden] {
+  display: none;
+}
+
+.sm-tooltip-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.sm-tooltip-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.sm-tooltip-badge {
+  flex-shrink: 0;
+  padding: 0 5px;
+  border: 1px solid #22242A;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.sm-tooltip-name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.sm-tooltip-summary {
+  margin-bottom: 6px;
+}
+
+.sm-tooltip-doc {
+  margin: 6px 0;
+  color: #52565E;
+  white-space: pre-wrap;
+}
+
+.sm-tooltip-attrs {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 8px;
+  margin: 6px 0;
+}
+
+.sm-tooltip-attrs dt {
+  color: #52565E;
+}
+
+.sm-tooltip-attrs dd {
+  margin: 0;
+  word-break: break-all;
+}
+
+.sm-tooltip code,
+.sm-tooltip-json {
+  font-family: Menlo, Consolas, monospace;
+  font-size: 11px;
+}
+
+.sm-tooltip-table {
+  width: 100%;
+  margin: 6px 0;
+  border-collapse: collapse;
+}
+
+.sm-tooltip-table th {
+  text-align: left;
+  font-weight: 500;
+  color: #52565E;
+  border-bottom: 1px solid #C9CCD1;
+  padding: 2px 4px;
+}
+
+.sm-tooltip-table td {
+  vertical-align: top;
+  padding: 3px 4px;
+  border-bottom: 1px solid #ECEDEF;
+}
+
+.sm-dir {
+  display: inline-block;
+  min-width: 26px;
+  padding: 0 3px;
+  border: 1px solid #22242A;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.sm-flags {
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sm-required {
+  margin-left: 2px;
+  font-weight: 700;
+}
+
+.sm-cell-desc {
+  color: #52565E;
+  font-size: 11px;
+}
+
+.sm-tooltip-json {
+  margin: 6px 0 0;
+  padding: 6px 8px;
+  max-height: 260px;
+  overflow: auto;
+  background: #F5F6F7;
+  border: 1px solid #E3E5E8;
+  border-radius: 3px;
+  white-space: pre;
+}
+
+.sm-tooltip-warning {
+  margin-top: 4px;
+  color: #B3261E;
+}
+
+.sm-tooltip-links {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sm-tooltip-links li + li {
+  margin-top: 2px;
+}
+
+.sm-tooltip-links a {
+  color: #22242A;
+  text-decoration: underline;
+}
+
+.sm-tooltip-links a:hover {
+  color: #000000;
+}
+
+/* экран прототипа (sm:screen) */
+
+.sm-tooltip-screen {
+  margin-top: 6px;
+  color: #2D5BE3;
+}
+
+.djs-element .sm-screen-badge {
+  cursor: pointer;
+}
+
+.djs-element .sm-screen-badge:hover rect {
+  fill: #EAF0FF;
+}
+
+/* подсветка узла при переходе из прототипа (bpmnBridge.focusElement) */
+
+.djs-element.fmg-highlight .djs-visual > :first-child {
+  stroke: #F29900 !important;
+  stroke-width: 4px !important;
+}
+
+.djs-connection.fmg-highlight .djs-visual > path {
+  stroke: #F29900 !important;
+}
+
+/* режим «Выбрать на схеме» */
+
+.fmg-picking .djs-element:not(.djs-connection) .djs-hit {
+  cursor: crosshair !important;
+}
+
+.fmg-picking .djs-element.hover .djs-outline {
+  stroke: #2D5BE3 !important;
+  stroke-width: 2px;
+  visibility: visible;
+}

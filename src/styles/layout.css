@@ -1,0 +1,433 @@
+/* Раскладка приложения: рабочая область и слои, стартовый экран, диалог, формы, «Проблемы». */
+
+/* рабочая область: слои лежат друг на друге; в просмотре под ними закреплена панель прохода */
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.workspace__stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+}
+
+/* не display:none — иначе saveSVG() скрытого слоя вернёт пустую диаграмму */
+.layer--hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* diagram-js ставит .djs-hit-* pointer-events: all, а в SVG это значение не зависит от visibility */
+.layer--hidden * {
+  pointer-events: none !important;
+}
+
+/* слой схемы */
+
+.bpmn-layer {
+  display: flex;
+  height: 100%;
+}
+
+.bpmn-canvas {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: #FFFFFF;
+
+  /* палитра и контекстное меню bpmn-js — в цветах приложения */
+  --palette-background-color: var(--surface);
+  --palette-border-color: var(--border);
+  --palette-entry-hover-color: var(--accent);
+  --palette-entry-selected-color: var(--accent);
+  --context-pad-entry-hover-background-color: var(--accent-soft);
+  --popup-border-color: var(--border);
+}
+
+.bpmn-canvas .djs-palette {
+  border-radius: 12px;
+  box-shadow: var(--shadow-2);
+}
+
+.bpmn-canvas .djs-popup {
+  border-radius: 12px;
+  box-shadow: var(--shadow-3);
+}
+
+.bpmn-properties {
+  width: var(--panel-width);
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  overflow: auto;
+  --font-family: inherit;
+}
+
+.bpmn-properties[hidden] {
+  display: none;
+}
+
+/* стартовый экран */
+
+.start-screen {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 24px;
+  overflow: auto;
+  background:
+    radial-gradient(900px 420px at 50% -10%, rgba(45, 91, 227, 0.1), transparent 70%),
+    var(--bg);
+}
+
+.start-card {
+  width: 100%;
+  max-width: 640px;
+  padding: 40px 40px 28px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow-2);
+  text-align: center;
+}
+
+.start-card .brand-mark {
+  margin: 0 auto;
+}
+
+.start-card h1 {
+  margin: 16px 0 8px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.start-lead {
+  max-width: 480px;
+  margin: 0 auto;
+  color: var(--text-2);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.start-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 26px 0 10px;
+}
+
+.start-hint {
+  margin: 0;
+  color: var(--text-3);
+  font-size: 12.5px;
+}
+
+.start-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 28px 0 0;
+  padding: 24px 0 0;
+  border-top: 1px solid var(--border);
+  list-style: none;
+  text-align: left;
+}
+
+.start-features li {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+
+.start-features b {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.start-features__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 6px;
+  border-radius: 9px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* диалог */
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 7vh 16px 16px;
+  background: rgba(20, 24, 33, 0.48);
+  backdrop-filter: blur(2px);
+  overflow: auto;
+}
+
+.dialog {
+  width: 100%;
+  max-width: 640px;
+  padding: 24px 24px 0;
+  background: var(--surface);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+}
+
+.dialog h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.dialog-hint {
+  margin: 4px 0 20px;
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 22px -24px 0;
+  padding: 14px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+/* поля форм — общие для диалога и инспектора */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.form-field--wide {
+  grid-column: 1 / -1;
+}
+
+.form-field input,
+.form-field textarea,
+.form-field select,
+.player__pick select {
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 9px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 400;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.form-field textarea {
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: var(--text-3);
+}
+
+.form-field input:hover,
+.form-field textarea:hover,
+.form-field select:hover,
+.player__pick select:hover {
+  border-color: #B4BCC9;
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus,
+.player__pick select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.cover-picker {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.cover-picker img,
+.cover-empty {
+  width: 128px;
+  height: 76px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.cover-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-3);
+  font-weight: 400;
+}
+
+.cover-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cover-actions .button {
+  cursor: pointer;
+}
+
+.form-error {
+  margin-top: 14px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--red-soft);
+  color: var(--red);
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .form-grid,
+  .start-features {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* панель «Проблемы» */
+
+.problems-panel {
+  position: absolute;
+  left: 60px; /* правее кнопок масштаба canvas */
+  bottom: 14px;
+  z-index: 20;
+  width: min(580px, calc(100% - 76px));
+  max-height: 42%;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+}
+
+.problems-panel__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.problems-panel__count {
+  flex: 1;
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+.problems-panel__close,
+.element-info__close,
+.call-card__close {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-2);
+}
+
+.problems-panel__close:hover,
+.element-info__close:hover,
+.call-card__close:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.problems-panel__list {
+  margin: 0;
+  padding: 6px;
+  overflow: auto;
+  list-style: none;
+}
+
+.problems-panel__list button {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 8px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.problems-panel__list button:hover {
+  background: var(--surface-3);
+}
+
+.problems-panel__icon {
+  display: flex;
+  flex: none;
+  margin-top: 2px;
+  color: var(--amber-line);
+}
+
+.problems-panel__list button[data-level="error"] .problems-panel__icon {
+  color: var(--red);
+}
+
+.problems-panel__empty {
+  margin: 0;
+  padding: 14px;
+  color: var(--text-2);
+  font-size: 13px;
+}
